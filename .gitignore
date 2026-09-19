@@ -13,3 +13,6 @@ __pycache__/
 
 # macOS
 .DS_Store
+
+# 描述
+desc.txt

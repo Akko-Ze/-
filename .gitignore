@@ -1,0 +1,15 @@
+# 环境变量
+.env
+
+# Python
+__pycache__/
+*.py[cod]
+
+# 虚拟环境
+.venv/
+
+# IDE
+.idea/
+
+# macOS
+.DS_Store

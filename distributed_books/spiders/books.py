@@ -12,11 +12,8 @@ class BooksSpider(scrapy.Spider):
     async def start(self):
         # decode_responses是要对responses解码，因为redis里是字节流，需要解码为字符串
         # 注意：此处的redis是异步的redis客户端
-        redis_client = redis.Redis(
-            host=self.settings.get("REDIS_HOST"),
-            port=self.settings.getint("REDIS_PORT"),
-            db=self.settings.getint("REDIS_DB"),
-            password=self.settings.get("REDIS_PASSWORD"),
+        redis_client = redis.Redis.from_url(
+            self.settings.get("REDIS_URL"),
             decode_responses=True,
             socket_timeout=None,
         )

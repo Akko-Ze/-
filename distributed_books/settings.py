@@ -8,6 +8,7 @@
 #     https://docs.scrapy.org/en/latest/topics/spider-middleware.html
 import os
 from dotenv import load_dotenv
+import socket
 
 load_dotenv()
 
@@ -21,11 +22,13 @@ POSTGRES_DB = os.getenv("POSTGRES_DB", "distributed_books")
 POSTGRES_USER = os.getenv("POSTGRES_USER", "postgres")
 POSTGRES_PASSWORD = os.getenv("POSTGRES_PASSWORD")
 
-
-
+# scheduler配置
 SCHEDULER = "scrapy_redis.scheduler.Scheduler"
 DUPEFILTER_CLASS = "scrapy_redis.dupefilter.RFPDupeFilter"
 SCHEDULER_PERSIST = True
+
+# workerid配置
+WORKER_ID = f"{socket.gethostname()}-{os.getpid()}"
 
 
 BOT_NAME = "distributed_books"
@@ -43,9 +46,9 @@ ADDONS = {}
 ROBOTSTXT_OBEY = True
 
 # Concurrency and throttling settings
-CONCURRENT_REQUESTS = 16 # 多少个并发
-CONCURRENT_REQUESTS_PER_DOMAIN = 16 # 每个网站多少个并发
-DOWNLOAD_DELAY = 0 # 对同一域名的请求之间的延迟
+CONCURRENT_REQUESTS = 4 # 多少个并发
+CONCURRENT_REQUESTS_PER_DOMAIN = 4 # 每个网站多少个并发
+DOWNLOAD_DELAY = 0.5 # 对同一域名的请求之间的延迟
 
 # Disable cookies (enabled by default)
 #COOKIES_ENABLED = False
@@ -73,9 +76,9 @@ DOWNLOAD_DELAY = 0 # 对同一域名的请求之间的延迟
 
 # Enable or disable extensions
 # See https://docs.scrapy.org/en/latest/topics/extensions.html
-#EXTENSIONS = {
-#    "scrapy.extensions.telnet.TelnetConsole": None,
-#}
+EXTENSIONS = {
+   "distributed_books.extensions.WorkerStatsExtensions":500
+}
 
 # Configure item pipelines
 # See https://docs.scrapy.org/en/latest/topics/item-pipeline.html

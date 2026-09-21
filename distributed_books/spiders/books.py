@@ -2,6 +2,8 @@ import redis.asyncio as redis
 import scrapy
 from redis.maint_notifications import MaintNotificationsConfig
 from distributed_books.items import DistributedBooksItem
+import asyncio
+import time
 
 
 class BooksSpider(scrapy.Spider):
@@ -9,7 +11,16 @@ class BooksSpider(scrapy.Spider):
     allowed_domains = ["books.toscrape.com"]
     # start_urls = ["https://books.toscrape.com"]
 
+    # 持续心跳
+    async def heartbeat(self, redis_client, worker_id):
+        while True:
+            await redis_client.hset("books:workers", worker_id, int(time.time()))
+            await asyncio.sleep(5)
+
     async def start(self):
+        # worker_id
+        worker_id = self.settings.get("WORKER_ID")
+
         # decode_responses是要对responses解码，因为redis里是字节流，需要解码为字符串
         # 注意：此处的redis是异步的redis客户端
         redis_client = redis.Redis.from_url(
@@ -17,7 +28,12 @@ class BooksSpider(scrapy.Spider):
             decode_responses=True,
             socket_timeout=None,
         )
-        self.logger.info("worker正在等待Redis起始任务...")
+
+        # redis_client操作redis,不阻塞执行heartbeat
+        asyncio.create_task(self.heartbeat(redis_client, worker_id))
+
+        self.logger.info(f"【{worker_id}】已启动心跳")
+        self.logger.info(f"【{worker_id}】 worker正在等待Redis起始任务...")
 
         while True:
             # 把blpop阻塞式函数放到一个线程里，防止阻塞整个事件循环，只阻塞这一个线程,当然，这只是同步的redis客户端

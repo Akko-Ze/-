@@ -46,9 +46,9 @@ ADDONS = {}
 ROBOTSTXT_OBEY = True
 
 # Concurrency and throttling settings
-CONCURRENT_REQUESTS = 4 # 多少个并发
-CONCURRENT_REQUESTS_PER_DOMAIN = 4 # 每个网站多少个并发
-DOWNLOAD_DELAY = 0.5 # 对同一域名的请求之间的延迟
+CONCURRENT_REQUESTS = 16 # 多少个并发
+CONCURRENT_REQUESTS_PER_DOMAIN = 16 # 每个网站多少个并发
+DOWNLOAD_DELAY = 0 # 对同一域名的请求之间的延迟
 
 # Disable cookies (enabled by default)
 #COOKIES_ENABLED = False
